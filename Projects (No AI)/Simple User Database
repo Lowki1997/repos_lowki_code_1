@@ -1,0 +1,37 @@
+#=========================
+#imports
+#=========================
+#choose a Gui import as needed
+
+
+#=========================
+#Create Class architecture
+#=========================
+class User: 
+   def __init__(self, name, email, phonenum):
+        self.name = name
+        self.email = email
+        self.phonenum = phonenum
+   def get_name(self):
+        return self.name
+        
+class Employee(User):
+   def __init__(self, name, email, phonenum, office):
+        super().__init__(name, email, phonenum)
+        self.role = "Employee"
+        self.office = office
+
+class Admin(Employee):
+    def __init__(self, name, email, phonenum, office):
+        super().__init__(name, email, phonenum)
+        self.role = "Admin"
+        self.office = office
+
+class customer(User):
+    def __init__(self, user_name, password, email, phonenum, address): 
+         self.role = "Customer"
+
+
+#=========================
+#Gui
+#=========================
