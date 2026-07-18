@@ -1,37 +1,138 @@
 #=========================
 #imports
 #=========================
-#choose a Gui import as needed
+
+import ipywidgets as widgets  #needs a pip isntall
 
 
 #=========================
-#Create Class architecture
+#Class architecture 
 #=========================
-class User: 
-   def __init__(self, name, email, phonenum):
+class User:
+    """
+    Base class for all instances in the database.
+    Contains all required args for the database.
+    name, email, phonenum are required for this class 
+    """ 
+
+    def __init__(self, name, email, phonenum):
         self.name = name
         self.email = email
         self.phonenum = phonenum
-   def get_name(self):
-        return self.name
+   
+    #Name Property
+    @property
+    def name(self):
+        return self._name
+   
+    @name.setter
+    def name(self, value):
+        self._name = value
+   
+    #Email Property
+    @property
+    def email(self):
+        return self._email
+   
+    @email.setter
+    def email(self, value):
+        self._email = value
+
+    #phonenum Property
+    @property
+    def phonenum(self):
+        return self._phonenum
+   
+    @phonenum.setter
+    def phonenum(self, value):
+        self._phonenum = value
+
+   
         
 class Employee(User):
+   """
+   Employee class inherits from User class
+   Used for normal workers in the database
+   Takes in all required args from User class and adds office arg
+   """
+
    def __init__(self, name, email, phonenum, office):
         super().__init__(name, email, phonenum)
         self.role = "Employee"
         self.office = office
+     
+   #office Property
+   @property
+   def office(self):
+           return self._office
+   
+   @office.setter
+   def office(self, value):
+          self._office = value
+     
 
 class Admin(Employee):
-    def __init__(self, name, email, phonenum, office):
+    """
+    Admin class inherits from Employee class
+    Used for Admin workers in the database
+    Takes in all required args from Employee class and adds admin_level arg
+    """
+
+    def __init__(self, name, email, phonenum, office, admin_level):
         super().__init__(name, email, phonenum)
         self.role = "Admin"
         self.office = office
+        self.admin_level = admin_level
+
+     #Admin_level Property
+    @property
+    def admin_level(self):
+           return self._admin_level
+    
+    @admin_level.setter
+    def admin_level(self, value):
+          self._admin_level = value
+    
 
 class customer(User):
-    def __init__(self, user_name, password, email, phonenum, address): 
+    """
+     Customer class inherits from User class
+     Used for customers in the database
+     Takes in all required args from User class and adds password and id args (for now)
+    """
+    
+    def __init__(self, name, email, phonenum, address, password, id): 
          self.role = "Customer"
+         self.password = password
+         self.id = id
+
+    #Password Property
+    @property 
+    def password(self):
+          return self._password
+    
+    @password.setter
+    def password(self, value):
+          self._password = value
+
+    #ID Property
+    @property
+    def id(self):
+          return self._id
+    
+    @id.setter
+    def id(self, value):
+          self._id = value
+
 
 
 #=========================
 #Gui
 #=========================
+
+if __name__ == "__main__":
+
+
+#test code 
+user1 = Employee("Rick","rick@gmail", "535","office1")
+print(user1.office)
