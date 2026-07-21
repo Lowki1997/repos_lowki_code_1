@@ -3,7 +3,7 @@
 #=========================
 
 import ipywidgets as widgets  #needs a pip isntall
-
+from IPython.display import display
 
 #=========================
 #Class architecture 
@@ -130,9 +130,6 @@ class customer(User):
 #Gui
 #=========================
 
-if __name__ == "__main__":
 
-
-#test code 
 user1 = Employee("Rick","rick@gmail", "535","office1")
-print(user1.office)
+#print(user1.office)
