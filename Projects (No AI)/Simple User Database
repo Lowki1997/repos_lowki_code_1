@@ -2,8 +2,10 @@
 #imports
 #=========================
 
-import ipywidgets as widgets  #needs a pip isntall
-from IPython.display import display
+#swithced to ttk because better documentation/usability
+
+from tkinter import *
+from tkinter import ttk   
 
 #=========================
 #Class architecture 
@@ -125,11 +127,14 @@ class customer(User):
           self._id = value
 
 
-
+user1 = Employee("Rick","rick@gmail", "535","office1")
 #=========================
 #Gui
 #=========================
 
-
-user1 = Employee("Rick","rick@gmail", "535","office1")
-#print(user1.office)
+root = Tk()
+frm = ttk.Frame(root, padding=30)
+frm.grid()
+ttk.Button(frm, text="Login", command=root.destroy).grid(column=0, row=0)
+ttk.Button(frm, text="Quit", command=root.destroy).grid(column=0, row=4)
+root.mainloop()
