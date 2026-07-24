@@ -22,7 +22,7 @@ class User:
         self.email = email
         self.phonenum = phonenum
    
-    #Name Property
+    #Name Property  #these are inheritable but ill keep them because i wrote it already
     @property
     def name(self):
         return self._name
@@ -146,5 +146,5 @@ root.mainloop()
 #proper root window
 #interation between gui and database
 
-#do each class inherate getters and setters for each property???
+
 
