@@ -1,150 +1,203 @@
 #=========================
-#imports
+# Imports
 #=========================
-
-#swithced to ttk because better documentation/usability
-
+# Switched to ttk because of better documentation / usability.
 from tkinter import *
-from tkinter import ttk   
+from tkinter import ttk
+
 
 #=========================
-#Class architecture 
+# Class architecture
 #=========================
 class User:
     """
-    Base class for all instances in the database.
-    Contains all required args for the database.
-    name, email, phonenum are required for this class 
-    """ 
+    Base class for every record in the database.
+    Holds the fields shared by all user types: name, email, phonenum.
+    """
 
     def __init__(self, name, email, phonenum):
         self.name = name
         self.email = email
         self.phonenum = phonenum
-   
-    #Name Property  #these are inheritable but ill keep them because i wrote it already
+        self.role = "User"
+
+    # Name property
     @property
     def name(self):
         return self._name
-   
+
     @name.setter
     def name(self, value):
         self._name = value
-   
-    #Email Property
+
+    # Email property
     @property
     def email(self):
         return self._email
-   
+
     @email.setter
     def email(self, value):
         self._email = value
 
-    #phonenum Property
+    # Phone-number property
     @property
     def phonenum(self):
         return self._phonenum
-   
+
     @phonenum.setter
     def phonenum(self, value):
         self._phonenum = value
 
-   
-        
-class Employee(User):
-   """
-   Employee class inherits from User class
-   Used for normal workers in the database
-   Takes in all required args from User class and adds office arg
-   """
+    def __repr__(self):
+        return f"{self.role}({self.name})"
 
-   def __init__(self, name, email, phonenum, office):
+
+class Employee(User):
+    """
+    Normal worker. Inherits User and adds an office.
+    """
+
+    def __init__(self, name, email, phonenum, office):
         super().__init__(name, email, phonenum)
         self.role = "Employee"
         self.office = office
-     
-   #office Property
-   @property
-   def office(self):
-           return self._office
-   
-   @office.setter
-   def office(self, value):
-          self._office = value
-     
+
+    @property
+    def office(self):
+        return self._office
+
+    @office.setter
+    def office(self, value):
+        self._office = value
+
 
 class Admin(Employee):
     """
-    Admin class inherits from Employee class
-    Used for Admin workers in the database
-    Takes in all required args from Employee class and adds admin_level arg
+    Admin worker. Inherits Employee and adds an admin_level.
     """
 
     def __init__(self, name, email, phonenum, office, admin_level):
-        super().__init__(name, email, phonenum)
+        # FIX: office must be passed up to Employee.__init__ or it errors.
+        super().__init__(name, email, phonenum, office)
         self.role = "Admin"
-        self.office = office
         self.admin_level = admin_level
 
-     #Admin_level Property
     @property
     def admin_level(self):
-           return self._admin_level
-    
+        return self._admin_level
+
     @admin_level.setter
     def admin_level(self, value):
-          self._admin_level = value
-    
+        self._admin_level = value
 
-class customer(User):
-    """
-     Customer class inherits from User class
-     Used for customers in the database
-     Takes in all required args from User class and adds password and id args (for now)
-    """
-    
-    def __init__(self, name, email, phonenum, address, password, id): 
-         self.role = "Customer"
-         self.password = password
-         self.id = id
 
-    #Password Property
-    @property 
+class Customer(User):
+    """
+    Customer. Inherits User and adds address, password and id.
+    """
+
+    def __init__(self, name, email, phonenum, address, password, id):
+        # FIX: original never called super(), so name/email/phone were never set.
+        super().__init__(name, email, phonenum)
+        self.role = "Customer"
+        self.address = address
+        self.password = password
+        self.id = id
+
+    @property
+    def address(self):
+        return self._address
+
+    @address.setter
+    def address(self, value):
+        self._address = value
+
+    @property
     def password(self):
-          return self._password
-    
+        return self._password
+
     @password.setter
     def password(self, value):
-          self._password = value
+        self._password = value
 
-    #ID Property
     @property
     def id(self):
-          return self._id
-    
+        return self._id
+
     @id.setter
     def id(self, value):
-          self._id = value
+        self._id = value
 
 
-user1 = Employee("Rick","rick@gmail", "535","office1")
 #=========================
-#Gui
+# Database
 #=========================
+class Database:
+    """
+    Minimal in-memory store.
+    Maps a username -> {user object, login password}, and can authenticate.
+    """
 
-root = Tk()
-root.title("Database Login")
-frm = ttk.Frame(root, padding=30)
-frm.grid()
-#ttk.Button(frm, text="Login", command=root.destroy).grid(column=0, row=0)
-ttk.Button(frm, text="Quit", command=root.destroy).grid(column=0, row=4)
-root.mainloop()
+    def __init__(self):
+        self._users = {}
 
-#to do:
-#add free text field to enter password and username
-#quit and login buttons need full functionailty
-#proper root window
-#interation between gui and database
+    def add_user(self, username, user, password):
+        self._users[username] = {"user": user, "password": password}
+
+    def authenticate(self, username, password):
+        record = self._users.get(username)
+        if record and record["password"] == password:
+            return record["user"]
+        return None
 
 
+# Seed some sample data so there is something to log in against.
+db = Database()
+db.add_user("rick", Employee("Rick", "rick@gmail.com", "535", "office1"), "admin123")
+db.add_user("sam", Admin("Sam", "sam@co.com", "999", "office2", 3), "root")
+db.add_user("cara", Customer("Cara", "cara@x.com", "111", "1 Main St", "pw", "C-01"), "pw")
 
+
+#=========================
+# GUI
+#=========================
+class LoginApp:
+    """
+    Small tkinter window that talks to the Database:
+    username + password fields, a Login button, and a Quit button.
+    """
+
+    def __init__(self, root, database):
+        self.db = database
+        root.title("Database Login")
+
+        frm = ttk.Frame(root, padding=30)
+        frm.grid()
+
+        ttk.Label(frm, text="Username:").grid(column=0, row=0, sticky=W, pady=4)
+        self.username = ttk.Entry(frm, width=25)
+        self.username.grid(column=1, row=0, pady=4)
+
+        ttk.Label(frm, text="Password:").grid(column=0, row=1, sticky=W, pady=4)
+        self.password = ttk.Entry(frm, width=25, show="*")
+        self.password.grid(column=1, row=1, pady=4)
+
+        ttk.Button(frm, text="Login", command=self.login).grid(column=0, row=2, pady=8)
+        ttk.Button(frm, text="Quit", command=root.destroy).grid(column=1, row=2, pady=8)
+
+        # Status line for feedback.
+        self.status = ttk.Label(frm, text="Enter your credentials.")
+        self.status.grid(column=0, row=3, columnspan=2, pady=(6, 0))
+
+    def login(self):
+        user = self.db.authenticate(self.username.get(), self.password.get())
+        if user:
+            self.status.config(text=f"Welcome {user.name} ({user.role})")
+        else:
+            self.status.config(text="Login failed: invalid credentials.")
+
+
+if __name__ == "__main__":
+    root = Tk()
+    LoginApp(root, db)
+    root.mainloop()
